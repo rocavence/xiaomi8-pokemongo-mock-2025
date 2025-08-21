@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 小米8 Pokémon GO 飛人安全方案</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>2025 小米8 Pokémon GO 飛人安全方案</h1>
+                <p class="subtitle">經典組合版 - 針對 Android 10 優化</p>
+            </div>
+        </header>
+
+        <nav class="table-of-contents">
+            <h2>📋 目錄</h2>
+            <ul>
+                <li><a href="#requirements">前置需求</a></li>
+                <li><a href="#step1">步驟 1: 系統準備與 Root</a></li>
+                <li><a href="#step2">步驟 2: 核心模組安裝</a></li>
+                <li><a href="#step3">步驟 3: Play Integrity 配置</a></li>
+                <li><a href="#step4">步驟 4: 隱藏與偽裝</a></li>
+                <li><a href="#step5">步驟 5: 最終測試</a></li>
+                <li><a href="#troubleshoot">故障排除</a></li>
+            </ul>
+        </nav>
+
+        <section id="requirements" class="card">
+            <h2>📱 前置需求</h2>
+            <ul class="requirements-list">
+                <li><strong>設備</strong>: 小米8，官方全球 ROM 12.2.3，已解鎖 Bootloader</li>
+                <li><strong>電腦</strong>: Mac/Windows/Linux 已安裝 ADB</li>
+                <li><strong>USB 調試</strong>: 已開啟（設定 → 開發者選項 → USB 調試）</li>
+                <li><strong>網路</strong>: 穩定的網路連線</li>
+            </ul>
+
+            <div class="code-section">
+                <h3>🛠 Mac 安裝 ADB</h3>
+                <pre><code>brew install android-platform-tools</code></pre>
+            </div>
+        </section>
+
+        <section id="step1" class="card">
+            <h2>步驟 1: 系統準備與 Root</h2>
+            
+            <h3>1.1 下載 Magisk</h3>
+            <h4>自動下載方式（推薦）</h4>
+            
+            <div class="code-section">
+                <h5>Mac/Linux</h5>
+                <pre><code>curl -s https://api.github.com/repos/topjohnwu/Magisk/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o Magisk.apk</code></pre>
+            </div>
+
+            <div class="code-section">
+                <h5>Windows PowerShell</h5>
+                <pre><code>$url = (Invoke-RestMethod "https://api.github.com/repos/topjohnwu/Magisk/releases/latest").assets | Where-Object {$_.name -like "*.apk"} | Select-Object -First 1 -ExpandProperty browser_download_url
+Invoke-WebRequest -Uri $url -OutFile "Magisk.apk"</code></pre>
+            </div>
+
+            <h4>手動下載</h4>
+            <p><strong>Magisk APK</strong>: <a href="https://github.com/topjohnwu/Magisk/releases/latest" target="_blank">https://github.com/topjohnwu/Magisk/releases/latest</a></p>
+
+            <h3>1.2 準備 Boot Image</h3>
+            <ol>
+                <li>從小米官方 ROM 提取 <code>boot.img</code></li>
+                <li>安裝 Magisk Manager APK</li>
+                <li>使用 Magisk 修補 <code>boot.img</code>（選擇 <strong>安裝</strong> → <strong>修補 Boot 映像檔</strong>）</li>
+                <li>將修補後的檔案傳送到電腦</li>
+            </ol>
+
+            <h3>1.3 刷入 Root（電腦操作）</h3>
+            <div class="code-section">
+                <pre><code># 重啟到 bootloader 模式
+adb reboot bootloader
+
+# 刷入修補後的 boot.img
+fastboot flash boot magisk_patched.img
+
+# 重啟設備
+fastboot reboot</code></pre>
+            </div>
+
+            <h3>1.4 Magisk 初始設定</h3>
+            <div class="important-note">
+                <h4>重要設定：</h4>
+                <ul>
+                    <li>✅ <strong>Zygisk</strong>: 開啟</li>
+                    <li>⚠️ <strong>Enforce DenyList</strong>: 暫時關閉（後續開啟）</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="step2" class="card">
+            <h2>步驟 2: 核心模組安裝</h2>
+            
+            <div class="warning-note">
+                <p>⚠️ <strong>安裝順序很重要！</strong> 請按照以下順序安裝，每個模組安裝後都要重啟。</p>
+            </div>
+
+            <h3>2.1 批量下載所有模組</h3>
+            
+            <h4>Mac/Linux 一鍵下載腳本</h4>
+            <div class="code-section">
+                <pre><code>#!/bin/bash
+# 創建下載目錄
+mkdir -p magisk_modules && cd magisk_modules
+
+# 下載 ReZygisk
+echo "下載 ZygiskNext..."
+curl -s https://api.github.com/repos/ZygiskNext/ZygiskNext/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o ZygiskNext.zip
+
+# 下載 PlayIntegrityFork
+echo "下載 PlayIntegrityFork..."
+curl -s https://api.github.com/repos/osm0sis/PlayIntegrityFork/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o PlayIntegrityFork.zip
+
+# 下載 TrickyStore
+echo "下載 TrickyStore..."
+curl -s https://api.github.com/repos/5ec1cff/TrickyStore/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o TrickyStore.zip
+
+# 下載 TrickyAddon
+echo "下載 TrickyAddon..."
+curl -s https://api.github.com/repos/KOWX712/TrickyAddon/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o TrickyAddon.zip
+
+# 下載 Shamiko
+echo "下載 Shamiko..."
+curl -s https://api.github.com/repos/LSPosed/LSPosed.github.io/releases/latest | grep browser_download_url | grep -i "shamiko.*\.zip" | cut -d '"' -f 4 | xargs curl -L -o Shamiko.zip
+
+# 下載 LSPosed
+echo "下載 LSPosed..."
+curl -s https://api.github.com/repos/JingMatrix/LSPosed/releases/latest | grep browser_download_url | grep "zygisk-release\.zip" | cut -d '"' -f 4 | xargs curl -L -o LSPosed.zip
+
+# 下載 HideMyApplist
+echo "下載 HideMyApplist..."
+curl -s https://api.github.com/repos/Dr-TSNG/Hide-My-Applist/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o HideMyApplist.apk
+
+# 下載 Hide Mock Location
+echo "下載 Hide Mock Location..."
+curl -s https://api.github.com/repos/KOWX712/HideMockLocation/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o HideMockLocation.apk
+
+echo "所有模組下載完成！"
+ls -la</code></pre>
+            </div>
+
+            <h4>推送模組到手機（一次性操作）</h4>
+            <div class="code-section">
+                <pre><code># 創建手機下載目錄
+adb shell mkdir -p /sdcard/Download/magisk_modules
+
+# 推送所有 zip 模組
+adb push ZygiskNext.zip /sdcard/Download/magisk_modules/
+adb push PlayIntegrityFork.zip /sdcard/Download/magisk_modules/
+adb push TrickyStore.zip /sdcard/Download/magisk_modules/
+adb push TrickyAddon.zip /sdcard/Download/magisk_modules/
+adb push Shamiko.zip /sdcard/Download/magisk_modules/
+adb push LSPosed.zip /sdcard/Download/magisk_modules/
+
+# 推送 APK 檔案
+adb push HideMyApplist.apk /sdcard/Download/
+adb push HideMockLocation.apk /sdcard/Download/</code></pre>
+            </div>
+
+            <h3>2.2 安裝順序（手機操作）</h3>
+            <ol class="install-order">
+                <li><strong>ZygiskNext</strong>: Magisk → 模組 → 從儲存空間安裝 → 重啟</li>
+                <li><strong>PlayIntegrityFork</strong>: Magisk → 模組 → 從儲存空間安裝 → 重啟</li>
+                <li><strong>TrickyStore</strong>: Magisk → 模組 → 從儲存空間安裝 → 重啟</li>
+                <li><strong>TrickyAddon</strong>: Magisk → 模組 → 從儲存空間安裝 → 重啟</li>
+            </ol>
+        </section>
+
+        <section id="step3" class="card">
+            <h2>步驟 3: Play Integrity 配置</h2>
+            
+            <h3>3.1 PlayIntegrityFork 設定</h3>
+            <ol>
+                <li>Magisk → 模組 → PlayIntegrityFork → <strong>動作按鈕</strong></li>
+                <li>自動產生適合 Android 10 的 fingerprint</li>
+            </ol>
+
+            <h3>3.2 TrickyStore 設定</h3>
+            <ol>
+                <li>開啟 TrickyStore 應用程式</li>
+                <li><strong>功能表</strong> → <strong>全選</strong></li>
+                <li><strong>功能表</strong> → <strong>取消選擇不必要項目</strong> → <strong>儲存</strong></li>
+                <li><strong>功能表</strong> → <strong>設定有效 Keybox</strong>
+                    <ul>
+                        <li>✅ <strong>會自動設定</strong>: TrickyStore 內建 AOSP keybox</li>
+                        <li>看到「找到有效 keybox」表示成功</li>
+                    </ul>
+                </li>
+                <li><strong>功能表</strong> → <strong>設定安全補丁</strong> → <strong>取得安全補丁日期</strong> → <strong>儲存</strong></li>
+            </ol>
+
+            <h3>3.3 清除 Google 服務</h3>
+            <div class="code-section">
+                <pre><code># 電腦協助清除（推薦）
+adb shell pm clear com.google.android.gms
+adb shell pm clear com.android.vending
+adb shell pm clear com.google.android.gsf</code></pre>
+            </div>
+        </section>
+
+        <section id="step4" class="card">
+            <h2>步驟 4: 隱藏與偽裝</h2>
+            
+            <h3>4.1 Shamiko (Root 隱藏)</h3>
+            <ol>
+                <li><strong>安裝</strong>: Magisk → 模組 → 從儲存空間安裝 Shamiko.zip → 重啟</li>
+                <li><strong>配置</strong>: Magisk → 設定 → <strong>強制執行拒絕清單</strong>: 保持關閉</li>
+                <li><strong>DenyList 設定</strong>: <strong>配置拒絕清單</strong> → 勾選：
+                    <ul>
+                        <li>Pokémon GO (所有子項目)</li>
+                        <li>Google Play Services</li>
+                        <li>Google Play Store</li>
+                        <li>GPS 模擬應用程式</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>4.2 LSPosed + 應用程式隱藏</h3>
+            
+            <h4>4.2.1 LSPosed 安裝</h4>
+            <ol>
+                <li><strong>安裝</strong>: Magisk → 模組 → 從儲存空間安裝 LSPosed.zip → 重啟</li>
+            </ol>
+
+            <h4>4.2.2 HideMyApplist (HMA) - 應用程式清單隱藏</h4>
+            <div class="code-section">
+                <pre><code># 安裝 HMA APK
+adb install /sdcard/Download/HideMyApplist.apk</code></pre>
+            </div>
+            <p><strong>設定</strong>:</p>
+            <ol>
+                <li>LSPosed Manager → 模組 → Hide My Applist → 啟用</li>
+                <li>勾選 <strong>Pokémon GO</strong></li>
+                <li>在 HMA 設定中隱藏以下應用：
+                    <ul>
+                        <li>Magisk Manager（如果還沒隱藏）</li>
+                        <li>LSPosed Manager</li>
+                        <li>GPS 模擬應用程式</li>
+                        <li>Root 相關工具</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h4>4.2.3 Hide Mock Location (HML) - 模擬位置隱藏</h4>
+            <div class="code-section">
+                <pre><code># 安裝 HML APK
+adb install /sdcard/Download/HideMockLocation.apk</code></pre>
+            </div>
+            <p><strong>設定</strong>:</p>
+            <ol>
+                <li>LSPosed Manager → 模組 → Hide Mock Location → 啟用</li>
+                <li>勾選 <strong>Pokémon GO</strong> 和你的 <strong>GPS 應用程式</strong></li>
+            </ol>
+
+            <h3>4.3 GPS 模擬應用程式</h3>
+            
+            <h4>推薦應用程式</h4>
+            <ul>
+                <li><strong>GPS Joystick</strong>: <a href="https://play.google.com/store/apps/details?id=com.incorporateapps.fakegps_route" target="_blank">Play Store 連結</a></li>
+                <li><strong>Fake GPS (開源)</strong>: <a href="https://github.com/FakeGPS/FakeGPS/releases" target="_blank">GitHub 連結</a></li>
+            </ul>
+
+            <h4>設定步驟</h4>
+            <ol>
+                <li><strong>開發者選項</strong> → <strong>模擬位置應用程式</strong> → 選擇你的 GPS 應用</li>
+                <li><strong>位置設定</strong> → <strong>模式</strong> → 僅限 GPS</li>
+                <li>關閉「位置記錄」和「Google 位置精確度」</li>
+                <li>在 LSPosed 模組中勾選該應用程式</li>
+            </ol>
+
+            <h3>4.4 隱藏 Magisk</h3>
+            <ol>
+                <li>Magisk → 設定 → <strong>隱藏 Magisk 應用程式</strong></li>
+                <li>輸入偽裝名稱（例如：「設定管理員」）</li>
+                <li>等待重新封裝完成</li>
+            </ol>
+        </section>
+
+        <section id="step5" class="card">
+            <h2>步驟 5: 最終測試</h2>
+            
+            <h3>5.1 Play Integrity 檢查（優先使用）</h3>
+            <p><strong>期望結果</strong>:</p>
+            <ul class="test-results">
+                <li>✅ <code>MEETS_BASIC_INTEGRITY = PASS</code></li>
+                <li>✅ <code>MEETS_DEVICE_INTEGRITY = PASS</code> (Android 10 目標)</li>
+                <li>⚠️ <code>MEETS_STRONG_INTEGRITY = FAIL</code> (預期，需要硬體 keybox)</li>
+            </ul>
+
+            <h3>5.2 其他檢測工具</h3>
+            <ul>
+                <li><strong>YASNAC</strong>: <a href="https://play.google.com/store/apps/details?id=rikka.safetynetchecker" target="_blank">Play Store 連結</a></li>
+                <li><strong>Play Store 內建</strong>: Play Store → 設定 → 點擊「Play Store 版本」7次 → 一般 → 開發者選項 → 驗證完整性</li>
+            </ul>
+
+            <h3>5.3 Pokémon GO 測試</h3>
+            <ol>
+                <li>啟動 GPS 模擬應用程式</li>
+                <li>設定安全的測試位置（避免跨洲跳躍）</li>
+                <li>開啟 Pokémon GO 檢查是否出現錯誤</li>
+            </ol>
+        </section>
+
+        <section id="troubleshoot" class="card">
+            <h2>故障排除</h2>
+            
+            <h3>重新生成 Play Integrity 配置</h3>
+            <div class="code-section">
+                <pre><code># 重新生成 fingerprint
+adb shell su -c "cd /data/adb/modules/playintegrityfix && rm -f custom.pif.json"
+adb shell su -c "cd /data/adb/modules/playintegrityfix && ./autopif2.sh --device"</code></pre>
+            </div>
+
+            <h3>檢查模組狀態</h3>
+            <div class="code-section">
+                <pre><code># 檢查已安裝模組
+adb shell su -c "ls -la /data/adb/modules/"
+
+# 檢查 DenyList 狀態
+adb shell su -c "magisk --denylist ls"
+
+# 檢查 Play Integrity 日誌
+adb shell su -c "logcat | grep -E '(PIF|TrickyStore)'"</code></pre>
+            </div>
+        </section>
+
+        <section class="card warning-section">
+            <h2>⚠️ 重要安全提醒</h2>
+            <ul>
+                <li><strong>避免瞬間跨洲移動</strong>: 容易被 Niantic 檢測</li>
+                <li><strong>遵守冷卻時間</strong>: 長距離移動需等待適當時間</li>
+                <li><strong>定期更新模組</strong>: 使用上述腳本定期檢查更新</li>
+                <li><strong>謹慎測試 Play Integrity</strong>: 過度檢測可能導致設備被標記</li>
+            </ul>
+            
+            <div class="success-rate">
+                <p><strong>本方案針對 Android 10 優化，理論成功率 85%+ 達到 Device Integrity</strong></p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>© 2025 個人知識備份 - 僅供教育參考用途</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
