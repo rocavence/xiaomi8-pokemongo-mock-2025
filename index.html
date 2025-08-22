@@ -111,43 +111,34 @@ fi
 
 # 創建下載目錄
 mkdir -p "$DOWNLOAD_DIR"
-cd "$DOWNLOAD_DIR"
+cd "$DOWNLOAD_DIR" || exit 1
 
-# 下載 ZygiskNext
-echo "下載 ZygiskNext..."
-curl -L -o ZygiskNext.zip $(curl -s https://api.github.com/repos/Dr-TSNG/ZygiskNext/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
+# 統一下載函數
+download_latest() {
+    local repo="$1"
+    local pattern="$2"
+    local output="$3"
+    echo "下載 $output..."
+    url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" \
+      | grep browser_download_url \
+      | grep -i "$pattern" \
+      | cut -d '"' -f 4)
+    if [ -n "$url" ]; then
+        curl -L -o "$output" "$url"
+    else
+        echo "⚠️ 無法找到 $output 的下載連結"
+    fi
+}
 
-# 下載 PlayIntegrityFork
-echo "下載 PlayIntegrityFork..."
-curl -L -o PlayIntegrityFork.zip $(curl -s https://api.github.com/repos/osm0sis/PlayIntegrityFork/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
-
-# 下載 TrickyStore
-echo "下載 TrickyStore..."
-curl -L -o TrickyStore.zip $(curl -s https://api.github.com/repos/5ec1cff/TrickyStore/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
-
-# 下載 TrickyAddon
-echo "下載 TrickyAddon..."
-curl -L -o TrickyAddon.zip $(curl -s https://api.github.com/repos/KOWX712/Tricky-Addon-Update-Target-List/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
-
-# 下載 Shamiko
-echo "下載 Shamiko..."
-curl -L -o Shamiko.zip $(curl -s https://api.github.com/repos/LSPosed/LSPosed.github.io/releases/latest | grep browser_download_url | grep -i "shamiko.*\.zip" | cut -d '"' -f 4)
-
-# 下載 LSPosed
-echo "下載 LSPosed..."
-curl -L -o LSPosed.zip $(curl -s https://api.github.com/repos/LSPosed/LSPosed/releases/latest | grep browser_download_url | grep "zygisk-release\.zip" | cut -d '"' -f 4)
-
-# 下載 HideMyApplist
-echo "下載 HideMyApplist..."
-curl -L -o HideMyApplist.apk $(curl -s https://api.github.com/repos/Dr-TSNG/Hide-My-Applist/releases/latest | grep browser_download_url | grep ".apk" | cut -d '"' -f 4)
-
-# 下載 Hide Mock Location auag0 版本
-echo "下載 HideMockLocation auag0 版本..."
-curl -L -o HideMockLocation_auag0_v1.2.1.apk \
-  "$(curl -s https://api.github.com/repos/auag0/HideMockLocation/releases/latest \
-    | grep browser_download_url \
-    | grep ".apk" \
-    | cut -d '"' -f 4)"
+# 下載各模組
+download_latest "Dr-TSNG/ZygiskNext" "\.zip" "ZygiskNext.zip"
+download_latest "osm0sis/PlayIntegrityFork" "\.zip" "PlayIntegrityFork.zip"
+download_latest "5ec1cff/TrickyStore" "\.zip" "TrickyStore.zip"
+download_latest "KOWX712/Tricky-Addon-Update-Target-List" "\.zip" "TrickyAddon.zip"
+download_latest "LSPosed/LSPosed.github.io" "shamiko.*\.zip" "Shamiko.zip"
+download_latest "LSPosed/LSPosed" "zygisk-release\.zip" "LSPosed.zip"
+download_latest "Dr-TSNG/Hide-My-Applist" "\.apk" "HideMyApplist.apk"
+download_latest "auag0/HideMockLocation" "\.apk" "HideMockLocation_auag0_v1.2.1.apk"
 
 echo "所有模組下載完成！"
 ls -la</code></pre>
