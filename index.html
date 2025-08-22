@@ -106,40 +106,50 @@ fastboot reboot</code></pre>
             <h4>Mac/Linux 一鍵下載腳本</h4>
             <div class="code-section">
                 <pre><code>#!/bin/bash
-# 創建下載目錄
-mkdir -p magisk_modules && cd magisk_modules
+# 提示使用者輸入下載路徑
+read -p "請輸入下載路徑 (例如 /Users/你的名稱/Desktop/magisk_modules): " DOWNLOAD_DIR
 
-# 下載 ReZygisk
+# 檢查使用者是否有輸入
+if [ -z "$DOWNLOAD_DIR" ]; then
+    echo "未輸入下載路徑，腳本已退出。"
+    exit 1
+fi
+
+# 創建下載目錄
+mkdir -p "$DOWNLOAD_DIR"
+cd "$DOWNLOAD_DIR"
+
+# 下載 ZygiskNext
 echo "下載 ZygiskNext..."
-curl -s https://api.github.com/repos/ZygiskNext/ZygiskNext/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o ZygiskNext.zip
+curl -L -o ZygiskNext.zip $(curl -s https://api.github.com/repos/Dr-TSNG/ZygiskNext/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
 
 # 下載 PlayIntegrityFork
 echo "下載 PlayIntegrityFork..."
-curl -s https://api.github.com/repos/osm0sis/PlayIntegrityFork/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o PlayIntegrityFork.zip
+curl -L -o PlayIntegrityFork.zip $(curl -s https://api.github.com/repos/osm0sis/PlayIntegrityFork/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
 
 # 下載 TrickyStore
 echo "下載 TrickyStore..."
-curl -s https://api.github.com/repos/5ec1cff/TrickyStore/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o TrickyStore.zip
+curl -L -o TrickyStore.zip $(curl -s https://api.github.com/repos/5ec1cff/TrickyStore/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
 
 # 下載 TrickyAddon
 echo "下載 TrickyAddon..."
-curl -s https://api.github.com/repos/KOWX712/TrickyAddon/releases/latest | grep browser_download_url | grep "\.zip" | cut -d '"' -f 4 | xargs curl -L -o TrickyAddon.zip
+curl -L -o TrickyAddon.zip $(curl -s https://api.github.com/repos/KOWX712/Tricky-Addon-Update-Target-List/releases/latest | grep browser_download_url | grep ".zip" | cut -d '"' -f 4)
 
 # 下載 Shamiko
 echo "下載 Shamiko..."
-curl -s https://api.github.com/repos/LSPosed/LSPosed.github.io/releases/latest | grep browser_download_url | grep -i "shamiko.*\.zip" | cut -d '"' -f 4 | xargs curl -L -o Shamiko.zip
+curl -L -o Shamiko.zip $(curl -s https://api.github.com/repos/LSPosed/LSPosed.github.io/releases/latest | grep browser_download_url | grep -i "shamiko.*\.zip" | cut -d '"' -f 4)
 
 # 下載 LSPosed
 echo "下載 LSPosed..."
-curl -s https://api.github.com/repos/JingMatrix/LSPosed/releases/latest | grep browser_download_url | grep "zygisk-release\.zip" | cut -d '"' -f 4 | xargs curl -L -o LSPosed.zip
+curl -L -o LSPosed.zip $(curl -s https://api.github.com/repos/LSPosed/LSPosed/releases/latest | grep browser_download_url | grep "zygisk-release\.zip" | cut -d '"' -f 4)
 
 # 下載 HideMyApplist
 echo "下載 HideMyApplist..."
-curl -s https://api.github.com/repos/Dr-TSNG/Hide-My-Applist/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o HideMyApplist.apk
+curl -L -o HideMyApplist.apk $(curl -s https://api.github.com/repos/Dr-TSNG/Hide-My-Applist/releases/latest | grep browser_download_url | grep ".apk" | cut -d '"' -f 4)
 
 # 下載 Hide Mock Location
-echo "下載 Hide Mock Location..."
-curl -s https://api.github.com/repos/KOWX712/HideMockLocation/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o HideMockLocation.apk
+echo "下載 HideMockLocation..."
+curl -L -o HideMockLocation.apk $(curl -s https://api.github.com/repos/ThePieMonster/HideMockLocation/releases/latest | grep browser_download_url | grep ".apk" | cut -d '"' -f 4)
 
 echo "所有模組下載完成！"
 ls -la</code></pre>
@@ -207,78 +217,116 @@ adb shell pm clear com.google.android.gsf</code></pre>
         <section id="step4" class="card">
             <h2>步驟 4: 隱藏與偽裝</h2>
             
-            <h3>4.1 Shamiko (Root 隱藏)</h3>
+            <h3>4.1 預先安裝GPS應用（但不配置）</h3>
+            <p><strong>安裝GPS模擬應用:</strong></p>
+            <div class="code-section">
+                <pre><code># 推薦應用程式
+adb install /sdcard/Download/GPS_Joystick.apk
+# 或
+adb install /sdcard/Download/Fake_GPS.apk</code></pre>
+            </div>
+            
+            <div class="important-note">
+                <h4>重要注意事項:</h4>
+                <ul>
+                    <li>✅ 僅安裝，不要開啟</li>
+                    <li>✅ 不要設置為模擬位置應用</li>
+                    <li>✅ 不要進行任何配置</li>
+                    <li>❌ 避免在開發者選項中選擇它</li>
+                </ul>
+            </div>
+
+            <h3>4.2 Shamiko (Root 隱藏)</h3>
+            <p><strong>安裝與配置:</strong></p>
+            <div class="code-section">
+                <pre><code># 安裝Shamiko模組
+Magisk → 模組 → 從儲存空間安裝 Shamiko.zip → 重啟</code></pre>
+            </div>
+            
+            <p><strong>配置設定:</strong></p>
             <ol>
-                <li><strong>安裝</strong>: Magisk → 模組 → 從儲存空間安裝 Shamiko.zip → 重啟</li>
-                <li><strong>配置</strong>: Magisk → 設定 → <strong>強制執行拒絕清單</strong>: 保持關閉</li>
-                <li><strong>DenyList 設定</strong>: <strong>配置拒絕清單</strong> → 勾選：
+                <li>Magisk → 設定 → <strong>強制執行拒絕清單</strong>: ❌ 保持關閉</li>
+                <li><strong>配置拒絕清單</strong> → 勾選以下項目：
                     <ul>
-                        <li>Pokémon GO (所有子項目)</li>
-                        <li>Google Play Services</li>
-                        <li>Google Play Store</li>
-                        <li>GPS 模擬應用程式</li>
+                        <li>✅ Pokémon GO (所有子項目)</li>
+                        <li>✅ Google Play Services</li>
+                        <li>✅ Google Play Store</li>
+                        <li>✅ 你的GPS模擬應用程式 (重要！)</li>
                     </ul>
                 </li>
             </ol>
 
-            <h3>4.2 LSPosed + 應用程式隱藏</h3>
+            <h3>4.3 LSPosed + 應用程式隱藏</h3>
             
-            <h4>4.2.1 LSPosed 安裝</h4>
-            <ol>
-                <li><strong>安裝</strong>: Magisk → 模組 → 從儲存空間安裝 LSPosed.zip → 重啟</li>
-            </ol>
-
-            <h4>4.2.2 HideMyApplist (HMA) - 應用程式清單隱藏</h4>
+            <h4>4.3.1 LSPosed 安裝:</h4>
             <div class="code-section">
-                <pre><code># 安裝 HMA APK
+                <pre><code># 安裝LSPosed模組
+Magisk → 模組 → 從儲存空間安裝 LSPosed.zip → 重啟</code></pre>
+            </div>
+
+            <h4>4.3.2 HideMyApplist (HMA) - 應用程式清單隱藏:</h4>
+            <div class="code-section">
+                <pre><code># 安裝HMA
 adb install /sdcard/Download/HideMyApplist.apk</code></pre>
             </div>
-            <p><strong>設定</strong>:</p>
+            
+            <p><strong>設定:</strong></p>
             <ol>
-                <li>LSPosed Manager → 模組 → Hide My Applist → 啟用</li>
-                <li>勾選 <strong>Pokémon GO</strong></li>
-                <li>在 HMA 設定中隱藏以下應用：
+                <li>LSPosed Manager → 模組 → Hide My Applist → ✅ 啟用</li>
+                <li>✅ 勾選 <strong>Pokémon GO</strong></li>
+                <li>在HMA中隱藏以下應用：
                     <ul>
-                        <li>Magisk Manager（如果還沒隱藏）</li>
+                        <li>Magisk Manager</li>
                         <li>LSPosed Manager</li>
-                        <li>GPS 模擬應用程式</li>
-                        <li>Root 相關工具</li>
+                        <li>GPS模擬應用程式</li>
+                        <li>其他Root工具</li>
                     </ul>
                 </li>
             </ol>
 
-            <h4>4.2.3 Hide Mock Location (HML) - 模擬位置隱藏</h4>
+            <h4>4.3.3 Hide Mock Location (HML) - 模擬位置隱藏:</h4>
             <div class="code-section">
-                <pre><code># 安裝 HML APK
+                <pre><code># 安裝HML
 adb install /sdcard/Download/HideMockLocation.apk</code></pre>
             </div>
-            <p><strong>設定</strong>:</p>
+            
+            <p><strong>設定:</strong></p>
             <ol>
-                <li>LSPosed Manager → 模組 → Hide Mock Location → 啟用</li>
-                <li>勾選 <strong>Pokémon GO</strong> 和你的 <strong>GPS 應用程式</strong></li>
+                <li>LSPosed Manager → 模組 → Hide Mock Location → ✅ 啟用</li>
+                <li>✅ 勾選 <strong>Pokémon GO</strong></li>
+                <li>✅ 勾選 <strong>你的GPS模擬應用程式</strong></li>
             </ol>
 
-            <h3>4.3 GPS 模擬應用程式</h3>
+            <h3>4.4 GPS 模擬應用程式配置</h3>
             
-            <h4>推薦應用程式</h4>
+            <h4>隱藏 Magisk:</h4>
+            <div class="code-section">
+                <pre><code># Magisk自我隱藏
+Magisk → 設定 → 隱藏Magisk應用程式</code></pre>
+            </div>
+            <ul>
+                <li>輸入偽裝名稱（例如：「系統管理員」）</li>
+                <li>等待重新封裝完成</li>
+            </ul>
+
+            <h4>推薦應用程式:</h4>
             <ul>
                 <li><strong>GPS Joystick</strong>: <a href="https://play.google.com/store/apps/details?id=com.incorporateapps.fakegps_route" target="_blank">Play Store 連結</a></li>
                 <li><strong>Fake GPS (開源)</strong>: <a href="https://github.com/FakeGPS/FakeGPS/releases" target="_blank">GitHub 連結</a></li>
             </ul>
 
-            <h4>設定步驟</h4>
+            <h4>系統設置:</h4>
             <ol>
-                <li><strong>開發者選項</strong> → <strong>模擬位置應用程式</strong> → 選擇你的 GPS 應用</li>
-                <li><strong>位置設定</strong> → <strong>模式</strong> → 僅限 GPS</li>
-                <li>關閉「位置記錄」和「Google 位置精確度」</li>
-                <li>在 LSPosed 模組中勾選該應用程式</li>
+                <li><strong>開發者選項</strong> → <strong>模擬位置應用程式</strong> → 選擇你的GPS應用</li>
+                <li><strong>位置設定</strong> → <strong>模式</strong> → 僅限GPS</li>
+                <li>❌ 關閉「位置記錄」和「Google位置精確度」</li>
             </ol>
 
-            <h3>4.4 隱藏 Magisk</h3>
+            <h4>GPS應用初始配置:</h4>
             <ol>
-                <li>Magisk → 設定 → <strong>隱藏 Magisk 應用程式</strong></li>
-                <li>輸入偽裝名稱（例如：「設定管理員」）</li>
-                <li>等待重新封裝完成</li>
+                <li>開啟GPS模擬應用</li>
+                <li>授予必要權限</li>
+                <li>進行基本設置（但暫時不要開始模擬）</li>
             </ol>
         </section>
 
