@@ -19,6 +19,29 @@
     --code-border: #e1e4e8;
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-primary: #1c1c1e;
+        --background-secondary: #2c2c2e;
+        --background-tertiary: #3a3a3c;
+        --text-primary: #ffffff;
+        --text-secondary: #d1d1d6;
+        --text-tertiary: #a1a1a6;
+        --accent-blue: #0a84ff;
+        --accent-blue-hover: #409cff;
+        --border-color: #48484a;
+        --shadow-light: rgba(0, 0, 0, 0.3);
+        --shadow-medium: rgba(0, 0, 0, 0.5);
+        --warning-bg: #453c25;
+        --warning-border: #ffc107;
+        --success-bg: #1c3a52;
+        --success-border: #0a84ff;
+        --code-bg: #2d2d30;
+        --code-border: #48484a;
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -245,6 +268,12 @@ pre code {
     color: #856404;
     margin: 0;
     font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+    .warning-note p {
+        color: #ffb347;
+    }
 }
 
 /* Lists */
