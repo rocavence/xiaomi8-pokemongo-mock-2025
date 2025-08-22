@@ -215,14 +215,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     addSearchFunctionality();
 
-    // Add dark mode toggle
-    const addDarkModeToggle = () => {
-        const darkModeToggle = document.createElement('button');
-        darkModeToggle.innerHTML = '🌙';
-        darkModeToggle.style.cssText = `
+    // Add theme toggle buttons
+    const addThemeToggles = () => {
+        // Create button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
             position: fixed;
             bottom: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        `;
+        
+        // Dark mode toggle
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.innerHTML = '🌙';
+        darkModeToggle.title = 'Light/Dark Mode';
+        darkModeToggle.style.cssText = `
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -231,11 +241,28 @@ document.addEventListener('DOMContentLoaded', function() {
             color: white;
             font-size: 20px;
             cursor: pointer;
-            z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
             transition: all 0.2s ease;
         `;
         
+        // Tahoe theme toggle
+        const tahoeToggle = document.createElement('button');
+        tahoeToggle.innerHTML = '🏔️';
+        tahoeToggle.title = 'Tahoe Theme';
+        tahoeToggle.style.cssText = `
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #3182ce;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+            transition: all 0.2s ease;
+        `;
+        
+        // Dark mode toggle functionality
         darkModeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             darkModeToggle.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
@@ -244,27 +271,50 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         });
         
-        // Load saved preference - default to light mode
-        const savedPreference = localStorage.getItem('darkMode');
+        // Tahoe theme toggle functionality
+        tahoeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('tahoe-theme');
+            const isTahoe = document.body.classList.contains('tahoe-theme');
+            tahoeToggle.innerHTML = isTahoe ? '🌲' : '🏔️';
+            tahoeToggle.style.background = isTahoe ? '#2c5282' : '#3182ce';
+            
+            // Save preference
+            localStorage.setItem('tahoeTheme', isTahoe);
+        });
         
-        // Only apply dark mode if explicitly set to true
-        if (savedPreference === 'true') {
+        // Load saved preferences
+        const savedDarkMode = localStorage.getItem('darkMode');
+        const savedTahoeTheme = localStorage.getItem('tahoeTheme');
+        
+        // Apply dark mode if saved
+        if (savedDarkMode === 'true') {
             document.body.classList.add('dark-mode');
             darkModeToggle.innerHTML = '☀️';
         } else {
-            // Default to light mode - explicitly remove dark-mode class
             document.body.classList.remove('dark-mode');
             darkModeToggle.innerHTML = '🌙';
-            // Also clear any incorrect localStorage value
-            if (savedPreference !== null && savedPreference !== 'false') {
+            if (savedDarkMode !== null && savedDarkMode !== 'false') {
                 localStorage.setItem('darkMode', 'false');
             }
         }
         
-        document.body.appendChild(darkModeToggle);
+        // Apply Tahoe theme if saved
+        if (savedTahoeTheme === 'true') {
+            document.body.classList.add('tahoe-theme');
+            tahoeToggle.innerHTML = '🌲';
+            tahoeToggle.style.background = '#2c5282';
+        } else {
+            document.body.classList.remove('tahoe-theme');
+            tahoeToggle.innerHTML = '🏔️';
+            tahoeToggle.style.background = '#3182ce';
+        }
+        
+        buttonContainer.appendChild(tahoeToggle);
+        buttonContainer.appendChild(darkModeToggle);
+        document.body.appendChild(buttonContainer);
     };
     
-    addDarkModeToggle();
+    addThemeToggles();
 
     // Dark mode styles now handled by CSS @media queries - removed hardcoded styles
 

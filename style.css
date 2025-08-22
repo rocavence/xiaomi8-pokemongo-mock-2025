@@ -64,6 +64,57 @@ body.dark-mode {
     --code-border: #48484a;
 }
 
+/* macOS Tahoe Theme - inspired by Lake Tahoe blue tones */
+body.tahoe-theme {
+    --background-primary: #f0f8ff;
+    --background-secondary: #e6f3ff;
+    --background-tertiary: #d9edff;
+    --text-primary: #1a365d;
+    --text-secondary: #2c5282;
+    --text-tertiary: #4299e1;
+    --accent-blue: #3182ce;
+    --accent-blue-hover: #2c5282;
+    --border-color: #bee3f8;
+    --shadow-light: rgba(49, 130, 206, 0.1);
+    --shadow-medium: rgba(49, 130, 206, 0.2);
+    --warning-bg: #fef5e7;
+    --warning-border: #ed8936;
+    --success-bg: #c6f6d5;
+    --success-border: #38a169;
+    --code-bg: #ebf8ff;
+    --code-border: #90cdf4;
+}
+
+/* Tahoe Dark Theme - inspired by Lake Tahoe at twilight */
+body.tahoe-theme.dark-mode {
+    --background-primary: #1a202c;
+    --background-secondary: #2d3748;
+    --background-tertiary: #4a5568;
+    --text-primary: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --text-tertiary: #718096;
+    --accent-blue: #63b3ed;
+    --accent-blue-hover: #4299e1;
+    --border-color: #4a5568;
+    --shadow-light: rgba(99, 179, 237, 0.15);
+    --shadow-medium: rgba(99, 179, 237, 0.25);
+    --warning-bg: #744210;
+    --warning-border: #ed8936;
+    --success-bg: #22543d;
+    --success-border: #48bb78;
+    --code-bg: #2d3748;
+    --code-border: #4a5568;
+}
+
+/* Tahoe theme specific styling */
+body.tahoe-theme .header {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+}
+
+body.tahoe-theme .warning-section {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+}
+
 * {
     margin: 0;
     padding: 0;
