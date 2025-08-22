@@ -1,5 +1,6 @@
 /* Apple macOS style design */
 :root {
+    /* Light mode colors (default) */
     --background-primary: #ffffff;
     --background-secondary: #f8f9fa;
     --background-tertiary: #f2f2f7;
@@ -17,6 +18,29 @@
     --success-border: #007aff;
     --code-bg: #f6f8fa;
     --code-border: #e1e4e8;
+}
+
+/* Explicit light mode */
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-primary: #ffffff;
+        --background-secondary: #f8f9fa;
+        --background-tertiary: #f2f2f7;
+        --text-primary: #1d1d1f;
+        --text-secondary: #515151;
+        --text-tertiary: #86868b;
+        --accent-blue: #007aff;
+        --accent-blue-hover: #0051d2;
+        --border-color: #d2d2d7;
+        --shadow-light: rgba(0, 0, 0, 0.05);
+        --shadow-medium: rgba(0, 0, 0, 0.1);
+        --warning-bg: #fff3cd;
+        --warning-border: #ffc107;
+        --success-bg: #d1edff;
+        --success-border: #007aff;
+        --code-bg: #f6f8fa;
+        --code-border: #e1e4e8;
+    }
 }
 
 /* Dark mode support */
