@@ -56,12 +56,6 @@
                 <pre><code>curl -s https://api.github.com/repos/topjohnwu/Magisk/releases/latest | grep browser_download_url | grep "\.apk" | cut -d '"' -f 4 | xargs curl -L -o Magisk.apk</code></pre>
             </div>
 
-            <div class="code-section">
-                <h5>Windows PowerShell</h5>
-                <pre><code>$url = (Invoke-RestMethod "https://api.github.com/repos/topjohnwu/Magisk/releases/latest").assets | Where-Object {$_.name -like "*.apk"} | Select-Object -First 1 -ExpandProperty browser_download_url
-Invoke-WebRequest -Uri $url -OutFile "Magisk.apk"</code></pre>
-            </div>
-
             <h4>手動下載</h4>
             <p><strong>Magisk APK</strong>: <a href="https://github.com/topjohnwu/Magisk/releases/latest" target="_blank">https://github.com/topjohnwu/Magisk/releases/latest</a></p>
 
