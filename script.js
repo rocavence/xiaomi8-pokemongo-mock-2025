@@ -244,10 +244,21 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         });
         
-        // Load saved preference
-        if (localStorage.getItem('darkMode') === 'true') {
+        // Load saved preference - default to light mode
+        const savedPreference = localStorage.getItem('darkMode');
+        
+        // Only apply dark mode if explicitly set to true
+        if (savedPreference === 'true') {
             document.body.classList.add('dark-mode');
             darkModeToggle.innerHTML = '☀️';
+        } else {
+            // Default to light mode - explicitly remove dark-mode class
+            document.body.classList.remove('dark-mode');
+            darkModeToggle.innerHTML = '🌙';
+            // Also clear any incorrect localStorage value
+            if (savedPreference !== null && savedPreference !== 'false') {
+                localStorage.setItem('darkMode', 'false');
+            }
         }
         
         document.body.appendChild(darkModeToggle);
