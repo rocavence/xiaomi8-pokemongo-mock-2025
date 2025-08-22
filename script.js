@@ -266,59 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     addDarkModeToggle();
 
-    // Add dark mode styles
-    const addDarkModeStyles = () => {
-        const darkModeCSS = `
-            body.dark-mode {
-                background-color: #1a1a1a;
-                color: #ffffff;
-            }
-            
-            body.dark-mode .card {
-                background-color: #2a2a2a;
-                border-color: #404040;
-            }
-            
-            body.dark-mode .table-of-contents {
-                background-color: #2a2a2a;
-                border-color: #404040;
-            }
-            
-            body.dark-mode .table-of-contents a {
-                background-color: #404040;
-                color: #ffffff;
-            }
-            
-            body.dark-mode pre {
-                background-color: #1e1e1e;
-                border-color: #404040;
-            }
-            
-            body.dark-mode code {
-                background-color: #1e1e1e;
-                border-color: #404040;
-            }
-            
-            body.dark-mode .requirements-list {
-                background-color: #404040;
-            }
-            
-            body.dark-mode .install-order li {
-                background-color: #404040;
-            }
-            
-            body.dark-mode .footer {
-                background-color: #2a2a2a;
-                border-color: #404040;
-            }
-        `;
-        
-        const style = document.createElement('style');
-        style.textContent = darkModeCSS;
-        document.head.appendChild(style);
-    };
-    
-    addDarkModeStyles();
+    // Dark mode styles now handled by CSS @media queries - removed hardcoded styles
 
     console.log('🍎 Apple macOS 風格網頁已載入完成');
 });
